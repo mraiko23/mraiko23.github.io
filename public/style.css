@@ -1,0 +1,98 @@
+body {
+  background: linear-gradient(120deg, #232526 0%, #414345 60%, #43ea6a 100%);
+  min-height: 100vh;
+  position: relative;
+}
+.bg-gradient {
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+}
+.desc-block {
+  background: rgba(40, 44, 52, 0.97);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+  border-radius: 2.5rem;
+  padding: 3.5rem 2.5rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 420px;
+  min-height: 420px;
+}
+.desc-block h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+.desc-block ul {
+  font-size: 1.3rem;
+  margin-left: 0.5rem;
+  margin-bottom: 0;
+}
+.desc-block li {
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.5px;
+}
+.btn-success {
+  font-size: 2rem;
+  font-weight: 700;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0,128,0,0.2);
+  transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+  background: linear-gradient(90deg, #4caf50 60%, #388e3c 100%);
+  color: #fff;
+  margin-bottom: 1.2rem;
+  width: 100%;
+  text-align: center;
+}
+.btn-success:hover {
+  transform: scale(1.04) translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(76,175,80,0.45), 0 2px 12px 0 rgba(0,0,0,0.18);
+  background: linear-gradient(90deg, #43ea6a 60%, #388e3c 100%);
+  filter: brightness(1.08);
+}
+.shadow-lg {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3)!important;
+}
+.rounded-4 {
+  border-radius: 2rem!important;
+}
+.profile-mini {
+  position: absolute;
+  top: 32px;
+  right: 48px;
+  z-index: 10;
+}
+.profile-box {
+  display: flex;
+  align-items: center;
+  background: rgba(40,44,52,0.95);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  border-radius: 2rem;
+  padding: 0.5rem 1.2rem;
+}
+.profile-box img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 0.7rem;
+  border: 2.5px solid #4caf50;
+}
+.logo {
+  position: absolute;
+  top: 32px;
+  left: 48px;
+  z-index: 10;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  object-fit: cover;
+  background: #fff;
+}
+.profile-box span {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}

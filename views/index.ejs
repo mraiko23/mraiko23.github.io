@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarity Projects</title>
+  <link rel="icon" type="image/jpeg" href="https://mraiko23.github.io/photo_2025-08-07_15-00-24.jpg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-dark text-light">
+  <% if (!user) { %>
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100vh;">
+      <div class="desc-block text-center">
+        <h1>Вход только через <span style="color:#4caf50">Telegram</span></h1>
+        <p class="fs-5 mb-4">Для доступа к сайту авторизуйтесь через Telegram</p>
+        <script async src="https://telegram.org/js/telegram-widget.js?7"
+          data-telegram-login="YOUR_BOT_USERNAME"
+          data-size="large"
+          data-userpic="true"
+          data-auth-url="/auth/telegram"
+          data-request-access="write"></script>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="container-fluid py-5">
+      <div class="row justify-content-center align-items-start" style="min-height: 80vh;">
+        <div class="col-lg-5 col-md-6 mb-4">
+          <div class="desc-block">
+            <h1>Привет! Ты попал на сайт <span style="color:#4caf50">clarity projects</span></h1>
+            <span class="fs-4 mb-3">Здесь ты увидишь наши проекты такие как:</span>
+            <ul class="list-unstyled mb-0">
+              <li>• Сайты</li>
+              <li>• Телеграмм боты</li>
+              <li>• Нейросети</li>
+              <li>• Приложения</li>
+              <li>• Игры</li>
+              <li>• и другое</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-5 col-md-6 mb-4 d-flex flex-column align-items-stretch justify-content-start">
+          <div class="w-100 d-flex flex-column" style="margin-top: 0.5rem;">
+            <a href="https://claritygrowgardenstock.onrender.com/" target="_blank" class="btn btn-success btn-lg py-4 px-5 fw-bold shadow-lg">Grow a Garden Stocks Site</a>
+            <a href="https://t.me/GrowaGardenStockNewsCLARTY" target="_blank" class="btn btn-success btn-lg py-4 px-5 fw-bold shadow-lg">Наш телеграмм канал по Grow a Garden</a>
+            <!-- Добавь другие кнопки проектов здесь -->
+          </div>
+        </div>
+      </div>
+      <div class="profile-mini">
+        <div class="profile-box">
+          <img src="<%= user.photo_url %>" alt="avatar">
+          <span>@<%= user.username %></span>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</body>
+</html>

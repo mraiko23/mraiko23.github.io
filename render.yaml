@@ -1,0 +1,13 @@
+{
+  "name": "Clarity Projects",
+  "description": "Сайт компании Clarity Projects с авторизацией через Telegram",
+  "repository": "https://github.com/yourusername/clarity-projects-site",
+  "env": {
+    "TELEGRAM_BOT_TOKEN": {
+      "description": "Токен Telegram-бота для авторизации",
+      "required": true
+    }
+  },
+  "startCommand": "node index.js",
+  "buildCommand": "npm install"
+}
