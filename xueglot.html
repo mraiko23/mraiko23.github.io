@@ -287,6 +287,12 @@
         }
 
         function onResults(results) {
+            // Очищаем canvas перед каждым кадром (чтобы удалить индикаторы)
+            // но сохраняем нарисованное
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.putImageData(imageData, 0, 0);
+            
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                 const landmarks = results.multiHandLandmarks[0];
                 
@@ -300,11 +306,11 @@
                     Math.pow(indexTip.y - middleTip.y, 2)
                 );
                 
-                // Координаты с учетом зеркального отображения (так как видео отзеркалено)
-                const x = (1 - indexTip.x) * canvas.width; // Инвертируем X для зеркального отображения
+                // Координаты с учетом зеркального отображения
+                const x = (1 - indexTip.x) * canvas.width;
                 const y = indexTip.y * canvas.height;
                 
-                // Если пальцы скрещены (близко друг к другу)
+                // Если пальцы близко (скрещены)
                 if (distance < 0.05) {
                     if (!isDrawing) {
                         isDrawing = true;
@@ -324,6 +330,7 @@
                         ctx.moveTo(lastX, lastY);
                         ctx.lineTo(x, y);
                         ctx.stroke();
+                        ctx.shadowBlur = 0;
                         
                         lastX = x;
                         lastY = y;
@@ -336,14 +343,12 @@
                     }
                 }
                 
-                // Рисуем индикатор на кончике указательного пальца для визуализации
-                ctx.fillStyle = distance < 0.05 ? '#00ff00' : '#ffff00';
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = ctx.fillStyle;
-                ctx.beginPath();
-                ctx.arc(x, y, 8, 0, 2 * Math.PI);
-                ctx.fill();
+                // Рисуем индикатор (этот убирается на следующем кадре)
+                ctx.fillStyle = distance < 0.05 ? 'rgba(0, 255, 0, 0.7)' : 'rgba(255, 255, 0, 0.5)';
                 ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                ctx.fill();
             }
         }
 
