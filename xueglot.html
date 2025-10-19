@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рисование пальцами</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        video {
+            width: 100%;
+            display: block;
+            transform: scaleX(-1);
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .clear-btn {
+            background: #ff6b6b;
+            color: white;
+        }
+        .clear-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        input[type="color"] {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .status.drawing {
+            background: #51cf66;
+            color: white;
+        }
+        .status.ready {
+            background: #ffd43b;
+            color: #333;
+        }
+        .instructions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .permission-help {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            display: none;
+        }
+        .permission-help.show {
+            display: block;
+        }
+        .permission-help strong {
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Рисование пальцами</h1>
+        
+        <div class="video-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="controls">
+            <button class="start-btn" id="startBtn" onclick="startCamera()">Запустить камеру</button>
+            <button class="clear-btn" onclick="clearCanvas()">Очистить</button>
+            <div class="color-picker">
+                <label>Цвет:</label>
+                <input type="color" id="colorPicker" value="#ff0000">
+            </div>
+        </div>
+
+        <div id="status" class="status ready">Нажмите "Запустить камеру" для начала работы</div>
+
+        <div class="instructions">
+            <strong>Инструкция:</strong><br>
+            1. Нажмите "Запустить камеру" и разрешите доступ<br>
+            2. Скрестите указательный и средний пальцы правой руки<br>
+            3. Водите скрещенными пальцами по экрану для рисования<br>
+            4. Разведите пальцы, чтобы остановить рисование
+        </div>
+
+        <div id="permissionHelp" class="permission-help">
+            <strong>📱 Как разрешить доступ к камере:</strong><br><br>
+            <strong>На iPhone/iPad (Safari):</strong><br>
+            • Настройки → Safari → Камера → Спросить или Разрешить<br>
+            • Или: Настройки → Safari → найдите этот сайт → Камера → Разрешить<br><br>
+            <strong>На Android (Chrome):</strong><br>
+            • Нажмите на замок/значок слева от адреса сайта<br>
+            • Выберите "Разрешения" → Камера → Разрешить<br>
+            • Или: Настройки Chrome → Настройки сайтов → Камера → найдите сайт → Разрешить<br><br>
+            <strong>После изменения настроек:</strong><br>
+            • Обновите страницу и нажмите кнопку "Запустить камеру" снова
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const status = document.getElementById('status');
+        const colorPicker = document.getElementById('colorPicker');
+        
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let camera = null;
+
+        function startCamera() {
+            const startBtn = document.getElementById('startBtn');
+            startBtn.disabled = true;
+            startBtn.textContent = 'Запрашиваем доступ...';
+            status.textContent = 'Пожалуйста, разрешите доступ к камере в браузере';
+            status.className = 'status ready';
+
+            // Проверяем, доступен ли API
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                startBtn.disabled = false;
+                startBtn.textContent = 'Запустить камеру';
+                status.textContent = '❌ Ваш браузер не поддерживает доступ к камере. Попробуйте обновить браузер или использовать Chrome/Safari';
+                status.className = 'status';
+                status.style.background = '#ff6b6b';
+                status.style.color = 'white';
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'user', // Фронтальная камера
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                } 
+            })
+            .then(stream => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    startBtn.textContent = 'Камера запущена';
+                    status.textContent = 'Скрестите указательный и средний пальцы для рисования';
+                    status.className = 'status ready';
+                    initHandTracking();
+                };
+            })
+            .catch(err => {
+                console.error('Camera error:', err);
+                startBtn.disabled = false;
+                startBtn.textContent = 'Запустить камеру';
+                
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    status.textContent = '❌ Доступ к камере запрещён. Посмотрите инструкцию ниже ⬇️';
+                    document.getElementById('permissionHelp').classList.add('show');
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    status.textContent = '❌ Камера не найдена. Проверьте подключение камеры или настройки устройства';
+                } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                    status.textContent = '❌ Камера используется другим приложением. Закройте другие приложения и попробуйте снова';
+                } else if (err.name === 'OverconstrainedError') {
+                    status.textContent = '❌ Камера не поддерживает требуемые параметры. Попробуйте другую камеру';
+                } else if (err.name === 'SecurityError') {
+                    status.textContent = '❌ Доступ запрещён по соображениям безопасности. Убедитесь, что сайт открыт через HTTPS';
+                } else {
+                    status.textContent = '❌ Ошибка: ' + err.message + '. Попробуйте обновить страницу или перезапустить браузер';
+                }
+                
+                status.className = 'status';
+                status.style.background = '#ff6b6b';
+                status.style.color = 'white';
+            });
+        }
+
+        function initHandTracking() {
+            const hands = new Hands({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }
+            });
+
+            hands.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+
+            hands.onResults(onResults);
+
+            camera = new Camera(video, {
+                onFrame: async () => {
+                    await hands.send({ image: video });
+                },
+                width: 640,
+                height: 480
+            });
+            camera.start();
+        }
+
+        function onResults(results) {
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const landmarks = results.multiHandLandmarks[0];
+                
+                // Указательный (8) и средний (12) пальцы
+                const indexTip = landmarks[8];
+                const middleTip = landmarks[12];
+                
+                // Вычисляем расстояние между кончиками пальцев
+                const distance = Math.sqrt(
+                    Math.pow(indexTip.x - middleTip.x, 2) +
+                    Math.pow(indexTip.y - middleTip.y, 2)
+                );
+                
+                // Если пальцы скрещены (близко друг к другу)
+                if (distance < 0.05) {
+                    const x = (indexTip.x + middleTip.x) / 2 * canvas.width;
+                    const y = (indexTip.y + middleTip.y) / 2 * canvas.height;
+                    
+                    if (!isDrawing) {
+                        isDrawing = true;
+                        lastX = x;
+                        lastY = y;
+                        status.className = 'status drawing';
+                        status.textContent = '✏️ Рисуем!';
+                    } else {
+                        ctx.strokeStyle = colorPicker.value;
+                        ctx.lineWidth = 5;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(lastX, lastY);
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                        
+                        lastX = x;
+                        lastY = y;
+                    }
+                } else {
+                    if (isDrawing) {
+                        isDrawing = false;
+                        status.className = 'status ready';
+                        status.textContent = 'Скрестите указательный и средний пальцы для рисования';
+                    }
+                }
+            }
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>
