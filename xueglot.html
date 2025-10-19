@@ -300,11 +300,12 @@
                     Math.pow(indexTip.y - middleTip.y, 2)
                 );
                 
+                // Координаты с учетом зеркального отображения (так как видео отзеркалено)
+                const x = (1 - indexTip.x) * canvas.width; // Инвертируем X для зеркального отображения
+                const y = indexTip.y * canvas.height;
+                
                 // Если пальцы скрещены (близко друг к другу)
                 if (distance < 0.05) {
-                    const x = (indexTip.x + middleTip.x) / 2 * canvas.width;
-                    const y = (indexTip.y + middleTip.y) / 2 * canvas.height;
-                    
                     if (!isDrawing) {
                         isDrawing = true;
                         lastX = x;
@@ -313,9 +314,11 @@
                         status.textContent = '✏️ Рисуем!';
                     } else {
                         ctx.strokeStyle = colorPicker.value;
-                        ctx.lineWidth = 5;
+                        ctx.lineWidth = 8;
                         ctx.lineCap = 'round';
                         ctx.lineJoin = 'round';
+                        ctx.shadowBlur = 2;
+                        ctx.shadowColor = colorPicker.value;
                         
                         ctx.beginPath();
                         ctx.moveTo(lastX, lastY);
@@ -332,6 +335,15 @@
                         status.textContent = 'Скрестите указательный и средний пальцы для рисования';
                     }
                 }
+                
+                // Рисуем индикатор на кончике указательного пальца для визуализации
+                ctx.fillStyle = distance < 0.05 ? '#00ff00' : '#ffff00';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.beginPath();
+                ctx.arc(x, y, 8, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.shadowBlur = 0;
             }
         }
 
